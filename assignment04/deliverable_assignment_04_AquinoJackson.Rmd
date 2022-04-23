@@ -1,0 +1,86 @@
+---
+title: "ASSIGNMENT 4"
+author: "Jackson Aquino"
+date: '2022-04-22'
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+bibliography: bibliography.bib
+---
+
+# Markdown Basics
+
+## Favorite Foods
+
+1.  Churrasco (Brazilian Barbecue)
+2.  Strogonoff
+3.  Pizza
+
+## Images
+
+![All Cases (Log Plot)](C:/Users/jackson_aquino/dsc520/completed/assignment04/plots/10-all-cases-log.png)
+
+## Add a Quote
+
+> It's true, isn't it? Then what else matters?
+
+## Add an Equation
+
+$\Delta = b^{2}-4*a*c$
+
+## Add a Footnote
+
+^[This is a footnote]
+
+## Add Citations
+
+* R for Everyone
+* Discovering Statistics Using R
+
+# Inline Code
+```{r include=FALSE}
+library(ggplot2)
+heights_df <- read.csv('C:/users/jackson_aquino/dsc520/data/r4ds/heights.csv')
+covid_data_df <- read.csv('C:/Users/jackson_aquino/dsc520/data/nytimes/covid-19-data/us-states.csv')
+covid_data_df$date <- as.Date(covid_data_df$date)
+california_df <- subset(covid_data_df,state=="California")
+florida_df <- subset(covid_data_df,state=="Florida")
+ny_df <- subset(covid_data_df,state=="New York")
+```
+
+## NY Times COVID-19 Data
+```{r echo=FALSE}
+chart_colors = c("darkgreen"="New York","darkred"="Florida","steelblue"="California")
+ggplot() + geom_line(data= florida_df, aes(x=date,y=cases,color="Florida")) + geom_line(data= california_df, aes(x=date,y=cases,color="California")) + geom_line(data= ny_df, aes(x=date,y=cases,color="New York")) + scale_y_log10() + theme(panel.background = element_rect(fill = "white", colour = "white", size = 0.5, linetype = "solid") , panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "lightgrey"), panel.grid.minor = element_line(size = 0.25, linetype = 'solid', colour = "lightgrey"),legend.key = element_rect(fill = "white", colour = "white")) + ylab('Cases') + xlab("") + labs(colour="")
+```
+
+## R4DS Height vs Earnings
+``` {r echo=FALSE}
+ggplot() + geom_point(data = heights_df, aes(x=height,y=earn,col=sex)) + xlab("Height (inches)") + ylab("Earnings (Dollars)") + theme(panel.background = element_rect(fill = "white", colour = "white", size = 0.5, linetype = "solid") , panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "lightgrey"), panel.grid.minor = element_line(size = 0.25, linetype = 'solid', colour = "lightgrey"),legend.key = element_rect(fill = "white", colour = "white"))
+```
+
+# Tables
+
+## Knitr Table with Kable
+``` {r echo=FALSE}
+# The instructions say we should use this data frame from a previous exercise but I couldn't find this dataset on the data folder so I decided to hard code the df here
+Name <- c("Aragon","Bilbo","Frodo","Sam","Sauron")
+Race <- c("Men","Hobbit","Hobbit","Hobbit","Maia")
+characters_df <- data.frame(Name,Race)
+characters_df$'In Fellowship?' <- c("Yes","No","Yes","Yes","No")
+characters_df$'Is Ring Bearer?' <- c("No","Yes","Yes","Yes","Yes")
+characters_df$Age <- c(88,129,51,36,7052)
+library(knitr)
+kable(characters_df,caption="One Ring to Rule Them All")
+```
+## Pandoc Table
+| Name      | Race      | In Fellowship? | Is Ring Bearer? | Age    |
+|-----------|-----------|----------------|-----------------|-------:|
+| Aragon    | Men       | Yes            | No             | 88     |
+| Bilbo        | Hobbit    | No            | Yes            | 129    |
+| Frodo        | Hobbit   | Yes           | Yes            | 51     |
+| Sam      | Hobbit   | Yes           | Yes            | 36     |
+| Sauron    | Maia     | No            | Yes            | 7052   |
+
+# References
