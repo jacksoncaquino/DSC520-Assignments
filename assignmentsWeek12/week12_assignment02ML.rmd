@@ -1,0 +1,49 @@
+---
+title: "Week12_Assignment02ML"
+author: "Jackson Aquino"
+date: '2022-06-02'
+output: word_document
+---
+
+```{r, include=FALSE}
+clustering_df <- read.csv('C:/Users/jackson_aquino/dsc520/data/clustering-data.csv')
+library(ggplot2)
+
+```
+# Plotting the data
+```{r, echo=FALSE}
+ggplot(clustering_df) + geom_point(aes(x=x,y=y))
+```
+
+Now, fitting a K-means model and plotting the data again with the centers defined by the model
+
+```{r, echo=FALSE, results='asis'}
+
+ks <- c(2:12)
+distances <- c()
+
+for (this_k in ks){
+  kmeans_model <- kmeans(x=clustering_df,centers = this_k)
+  results_df <- data.frame(x=clustering_df$x,y=clustering_df$y,group=kmeans_model$cluster)
+  results_df$xgroup <- kmeans_model$centers[results_df$group,1]
+  results_df$ygroup <- kmeans_model$centers[results_df$group,2]
+  results_df$distance <- ((results_df$x - results_df$xgroup) ^ 2 + (results_df$y - results_df$ygroup)^2)^(1/2)
+  distances <- append(distances, mean(results_df$distance))
+  centers_df <- data.frame(x=kmeans_model$centers[,1],y=kmeans_model$centers[,2])
+  cat(paste("\n\n## With ",this_k," centers:\n\n",sep=""))
+  #print(ggplot(clustering_df) + geom_point(aes(x=x,y=y), color = "black") + geom_point(aes(x=x,y=y),data = centers_df,color="red"))
+  clustering_df$group <- results_df$group
+  print(ggplot(clustering_df) + geom_point(aes(x=x,y=y,col=group)) + geom_point(aes(x=x,y=y),shape=4, data = centers_df,color="black"))
+
+}
+```
+
+# Average Distance
+Here's how the average distance varies with the number of groups:
+
+```{r, echo=FALSE}
+model_test <- data.frame(k=ks,average_distance=distances)
+ggplot(model_test) + geom_line(aes(x=k,y=average_distance))
+```
+
+In this case I would use 8 groups, having more than this adds a lot more complexity to the model without decreasing the average distance too much. 

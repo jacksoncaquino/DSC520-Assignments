@@ -1,0 +1,58 @@
+---
+title: "Week12_Assignment01ML"
+author: "Jackson Aquino"
+date: '2022-06-02'
+output: word_document
+---
+
+```{r, include=FALSE}
+classify_df_binary <- read.csv('C:/Users/jackson_aquino/dsc520/data/binary-classifier-data.csv')
+classify_df_trinary <- read.csv('C:/Users/jackson_aquino/dsc520/data/trinary-classifier-data.csv')
+library(ggplot2)
+
+```
+## Binary label
+```{r, echo=FALSE}
+ggplot(classify_df_binary) + geom_point(aes(x=x,y=y,col=label))
+```
+
+## Trinary label
+```{r, echo=FALSE}
+ggplot(classify_df_trinary) + geom_point(aes(x=x,y=y,col=label))
+```
+
+Looking at the plots, it is clear that a linear model would not work well on these datasets.
+
+Now, fitting a K nearest neighbors with k = 3, then 5, then 10, then 15, then 20, and finally 25, here are the accuracy results for the binary dataset:
+
+```{r, echo=FALSE}
+library(class)
+ks <- c(3,5,10,15,20,25)
+accuracy <- c()
+
+for (this_k in ks){
+  classify_df_binary$prediction_label <- knn(test=classify_df_binary,train = classify_df_binary, cl=classify_df_binary$label,k=this_k)
+  accuracy <- append(accuracy,sum(classify_df_binary$label==classify_df_binary$prediction_label)/nrow(classify_df_binary))
+}
+
+model_test <- data.frame(k=ks,accuracy=accuracy)
+ggplot(model_test) + geom_line(aes(x=k,y=accuracy))
+```
+
+And now for the trinary dataset:
+```{r, echo=FALSE}
+ks <- c(3,5,10,15,20,25)
+accuracy <- c()
+
+for (this_k in ks){
+  classify_df_trinary$prediction_label <- knn(test=classify_df_trinary,train = classify_df_trinary, cl=classify_df_trinary$label,k=this_k)
+  accuracy <- append(accuracy,sum(classify_df_trinary$label==classify_df_trinary$prediction_label)/nrow(classify_df_trinary))
+}
+
+model_test <- data.frame(k=ks,accuracy=accuracy)
+ggplot(model_test) + geom_line(aes(x=k,y=accuracy))
+```
+
+We can see that for both cases the accuracy decreases as K goes up, but on the trinary dataset it decreases more, as the number of groups competing for each new point is bigger. 
+
+For the binary data, when I tried to use a logistic regression to predict these values, I got a 58% accuracy, which is a lot worse than the 97% I got with KNN. I also used a decision tree to predict it and got 96.93%, which is almost the same as I got for the KNN, but that would not be as useful for the trinary data. I guess my takeaway from this experiment is that different ML algorithms are better for some kinds of tasks.
